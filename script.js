@@ -1,52 +1,37 @@
-/*
-We store our game status element here to allow us to more easily 
-use it later on 
-*/
+
+// Game variables to use later on 
 const statusDisplay = document.querySelector('.game--status');
 const enterNames = document.getElementById('submit-btn');
-const form = document.getElementById('player-form');
-/*
-Here we declare some variables that we will use to track the 
-game state throught the game. 
-*/
-/*
-We will use gameActive to pause the game in case of an end scenario
-*/
+const form = document.getElementById('player-form'); 
+
+// Game active variable to end game 
 let gameActive = true;
-/*
-We will store our current player here, so we know whos turn 
-*/
+
+// Store current player here to know whose turn it is
 let currentPlayer = "X";
-/*
-We will store our current game state here, the form of empty strings in an array
- will allow us to easily track played cells and validate the game state later on
-*/
+
+// Declare a current game state array for the 9 cells
 let gameState = ["", "", "", "", "", "", "", "", ""];
-/*
-Here we have declared some messages we will display to the user during the game.
-Since we have some dynamic factors in those messages, namely the current player,
-we have declared them as functions, so that the actual message gets created with 
-current data every time we need it.
-*/
+
+// Declare messages as functions to use throughout the game
 const winningMessage = () => `Player ${currentPlayer} has won!`;
 const drawMessage = () => `Game ended in a draw!`;
 const currentPlayerTurn = () => `It's ${currentPlayer}'s turn`;
-/*
-We set the inital message to let the players know whose turn it is
-*/
+
+// Set inital message to let players know whose turn it is
+
 statusDisplay.innerHTML = currentPlayerTurn();
 
 function playerNameInput () {
-  let playerX = document.getElementById('player1').value;
-  let playerO = document.getElementById('player2').value;
+  const playerX = document.getElementById('player1').value;
+  const playerO = document.getElementById('player2').value;
   document.getElementById("message-board").innerHTML = playerX + " versus " + playerO;
 }
 
 function handleCellPlayed(clickedCell, clickedCellIndex) {
-   /*
-We update our internal game state to reflect the played move, 
-as well as update the user interface to reflect the played move
-*/
+
+// Update internal game state to reflect the played move as well as update user interface to reflect played move
+
     gameState[clickedCellIndex] = currentPlayer;
     clickedCell.innerHTML = currentPlayer;
   
@@ -92,61 +77,58 @@ if (roundWon) {
         gameActive = false;
         return;
     }
-/* 
-We will check weather there are any values in our game state array 
-that are still not populated with a player sign
-*/
+
+// Check if there are any values in game state array that are still not marked with player sign
+
     let roundDraw = !gameState.includes("");
     if (roundDraw) {
         statusDisplay.innerHTML = drawMessage();
         gameActive = false;
         return;
     }
-/*
-If we get to here we know that the no one won the game yet, 
-and that there are still moves to be played, so we continue by changing the current player.
-*/
+
+// If we get to here we know that the no one won the game yet, 
+// and that there are still moves to be played, so we continue by changing the current player.
+
     handlePlayerChange();
 }
 function handleCellClick(clickedCellEvent) {
-   /*
-We will save the clicked html element in a variable for easier further use
-*/    
+
+// Save the clicked html element in a variable
+   
     const clickedCell = clickedCellEvent.target;
-/*
-Here we will grab the 'data-cell-index' attribute from the clicked cell to identify where that cell is in our grid. 
-Please note that the getAttribute will return a string value. Since we need an actual number we will parse it to an 
-integer(number)
-*/
+
+// Grab the 'data-cell-index' attribute from clicked cell to identify where cell is in the grid. 
+// The getAttribute will return a string value. Since we need actual number parse it to a number
+
     const clickedCellIndex = parseInt(
       clickedCell.getAttribute('data-cell-index')
     );
-/* 
-Next up we need to check whether the call has already been played, 
-or if the game is paused. If either of those is true we will simply ignore the click.
-*/
+
+// Check if call has already been played or if game is paused. If either ignore the click.
+
     if (gameState[clickedCellIndex] !== "" || !gameActive) {
         return;
     }
-/* 
-If everything if in order we will proceed with the game flow
-*/    
+
+// If all is good proceed with game flow
+   
     handleCellPlayed(clickedCell, clickedCellIndex);
     handleResultValidation();
 }
 
+// Function to restart the game
 function handleRestartGame() {
    gameActive = true;
    currentPlayer = "X";
    gameState = ["", "", "", "", "", "", "", "", ""];
    statusDisplay.innerHTML = currentPlayerTurn();
-   document.querySelectorAll('.cell')
-               .forEach(cell => cell.innerHTML = "");
+   document.querySelectorAll('.cell').forEach(cell => cell.innerHTML = "");
+          
 }
-/*
-And finally we add our event listeners to the actual game cells, as well as our 
-restart button
-*/
+
+// Add event listeners to game cells, restart button, and player name button
+
 document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', handleCellClick));
 document.querySelector('.game--restart').addEventListener('click', handleRestartGame);
 form.addEventListener('submit', playerNameInput);
